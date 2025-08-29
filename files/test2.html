@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Download Files</title>
+  <link rel="icon" href="/images/Zylo_icon.ico" type="image/x-icon" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/files/style.css">
+</head>
+<body>
+  <div class="max-w-3xl mx-auto bg-white/90 backdrop-blur-md shadow-lg rounded-2xl p-6">
+    <h1 class="text-3xl font-bold mb-4 text-blue-600">📦 Download Page</h1>
+    <div class="mb-6">
+      <label for="speed" class="block text-sm font-semibold mb-1">Enter your internet speed (Mbps):</label>
+      <input type="number" id="speed" class="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="e.g., 50">
+      <button onclick="estimateTimes()" class="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Estimate</button>
+    </div>
+
+    <div id="downloads" class="space-y-6">
+      <!-- Items will be inserted by JS -->
+    </div>
+  </div>
+
+  <script>
+    const files = [
+      { name: "Zylo_v1.5.7", sizeMB: 94.1, filename: "Zylo_v1.5.7.zip" },
+      { name: "Zylo_v1.6.1", sizeMB: 92.1, filename: "Zylo_v1.6.1.zip" },
+      { name: "Zylo_v1.6.2", sizeMB: 88.1, filename: "Zylo_v1.6.2.zip" }
+    ];
+
+    let estimatedTimes = {};
+
+    function estimateTimes() {
+      const speedMbps = parseFloat(document.getElementById('speed').value);
+      if (!speedMbps || speedMbps <= 0) {
+        alert("Please enter a valid internet speed.");
+        return;
+      }
+
+      files.forEach(file => {
+        const estimatedSeconds = (file.sizeMB * 8) / speedMbps;
+        estimatedTimes[file.filename] = estimatedSeconds;
+        const timeDisplay = document.getElementById(`time-${file.filename}`);
+        if (timeDisplay) {
+          timeDisplay.innerText = `⏱️ Estimated time: ${estimatedSeconds.toFixed(1)} seconds`;
+        }
+      });
+    }
+
+    function startDownload(filename) {
+      const progressBar = document.getElementById(`progress-${filename}`);
+      const estimatedTime = estimatedTimes[filename] || 5; // fallback if not estimated
+      let progress = 0;
+      const interval = 100; // ms
+      const increment = 100 / ((estimatedTime * 1000) / interval);
+
+      progressBar.style.width = '0%';
+      progressBar.classList.remove('bg-green-500');
+      const timer = setInterval(() => {
+        progress += increment;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(timer);
+          progressBar.classList.add('bg-green-500');
+        }
+        progressBar.style.width = `${progress}%`;
+      }, interval);
+
+      // Trigger actual download
+      const a = document.createElement('a');
+      a.href = filename;
+      a.download = filename;
+      a.click();
+    }
+
+    // Render file list
+    function renderDownloads() {
+      const container = document.getElementById('downloads');
+      container.innerHTML = '';
+
+      files.forEach(file => {
+        const html = `
+          <div class="p-4 border rounded-lg shadow-sm bg-gray-50">
+            <h2 class="text-xl font-semibold">${file.name}</h2>
+            <p class="text-sm text-gray-600">${file.sizeMB} MB</p>
+            <p id="time-${file.filename}" class="text-sm text-blue-600 mt-1">⏱️ Estimated time: not calculated</p>
+            <div class="w-full bg-gray-300 rounded h-3 mt-2 overflow-hidden">
+              <div id="progress-${file.filename}" class="bg-blue-500 h-full w-0 transition-all duration-500 ease-in-out"></div>
+            </div>
+            <button onclick="startDownload('${file.filename}')" class="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Download</button>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', html);
+      });
+    }
+
+    renderDownloads();
+  </script>
+</body>
+</html>
