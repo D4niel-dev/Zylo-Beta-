@@ -57,7 +57,7 @@
   <div class="w-full max-w-sm px-4 flex flex-col items-center space-y-4">
 
     <!-- Login Card -->
-    <div class="bg-white/20 backdrop-blur-md dark:bg-gray-800/30 shadow-2xl rounded-xl w-[90%] max-w-sm p-6 space-y-4 animate-fadeIn border border-white/10">
+    <div class="bg-white/20 backdrop-blur-md dark:bg-gray-800/30 shadow-2xl rounded-xl w-[90%] max-w-sm p-6 space-y-4 border border-white/10">
 
       <!-- Avatar -->
       <div class="flex justify-center mb-1">
@@ -182,7 +182,7 @@
         localStorage.setItem("username", result.username || identifier);
         localStorage.setItem("usertag", result.usertag); 
         remember ? localStorage.setItem("savedUsername", identifier) : localStorage.removeItem("savedUsername");
-        window.location.href = "mainapp.html";
+        window.location.href = "loading.html";
       } else {
         errorMsg.textContent = result.error || "Login failed.";
         errorMsg.classList.remove("hidden");
@@ -340,4 +340,5 @@ If you have any questions about these Terms, contact us at zylosupp0rt@gmail.com
     <div id="modalContent" class="p-4 space-y-2 text-sm whitespace-pre-line overflow-y-auto max-h-[70vh]"></div>
   </div>
 </body>
+
 </html>
